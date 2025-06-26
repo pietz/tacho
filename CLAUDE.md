@@ -47,9 +47,6 @@ The project is intentionally simple with all logic in a single module (`tacho/cl
 Currently no test suite. To verify changes:
 
 ```bash
-# Test basic functionality
-tacho test-models gpt-4o-mini
-
 # Run a benchmark
 tacho gpt-4o-mini --runs 2 --lim 100
 
@@ -59,13 +56,11 @@ tacho --help
 
 ## Common Issues
 
-- **Import errors**: Entry point in `pyproject.toml` must be `tacho:app` (not `tacho.cli:app`)
 - **API keys**: Models require environment variables (e.g., `OPENAI_API_KEY`, `GEMINI_API_KEY`)
 
 
-## Release Process
+## Import Notes
 
-1. Update version in `pyproject.toml`
-2. Update `CHANGELOG.md` with changes you implemented
-3. Build with `uv build`
-4. User publishes with `uv publish` (requires PyPI credentials)
+- Keep README.md and CLAUDE.md up-to-date
+- Bump version ONLY when the user says so, also reflecting changes in CHANGELOG.md
+- Do not build and or publish the package. The user does that.
