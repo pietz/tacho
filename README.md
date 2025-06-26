@@ -1,15 +1,7 @@
-# Tacho
+# tacho - LLM Speed Test
 
 A fast CLI tool for benchmarking LLM inference speed across multiple models and providers. Get tokens/second metrics to compare model performance.
 
-## Features
-
-- **Parallel benchmarking** - All models and runs execute concurrently for faster results
-- **Token-based metrics** - Measures actual tokens/second, not just response time
-- **Multi-provider support** - Works with any provider supported by LiteLLM (OpenAI, Anthropic, Google, Cohere, etc.)
-- **Configurable token limits** - Control response length for consistent comparisons
-- **Pre-flight validation** - Checks model availability and authentication before benchmarking
-- **Graceful error handling** - Clear error messages for authentication, rate limits, and connection issues
 
 ## Quick Start
 
@@ -23,8 +15,19 @@ export ANTHROPIC_API_KEY=your-key-here
 Run a benchmark using `uvx` (no installation required):
 
 ```bash
-uvx tacho gpt-4o-mini claude-3-haiku-20240307
+uvx tacho gpt-4.1 claude-sonmet-4
 ```
+
+
+## Features
+
+- **Parallel benchmarking** - All models and runs execute concurrently for faster results
+- **Token-based metrics** - Measures actual tokens/second, not just response time
+- **Multi-provider support** - Works with any provider supported by LiteLLM (OpenAI, Anthropic, Google, Cohere, etc.)
+- **Configurable token limits** - Control response length for consistent comparisons
+- **Pre-flight validation** - Checks model availability and authentication before benchmarking
+- **Graceful error handling** - Clear error messages for authentication, rate limits, and connection issues
+
 
 ## Installation
 
