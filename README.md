@@ -44,7 +44,7 @@ pip install tacho
 ### Basic benchmark
 
 ```bash
-# Compare models with default settings (5 runs, 2000 token limit)
+# Compare models with default settings (5 runs, 500 token limit)
 tacho gpt-4o gpt-4o-mini claude-3-haiku-20240307
 
 # Custom settings
@@ -61,7 +61,7 @@ tacho test-models gpt-4 claude-3-opus-20240229 gemini-pro
 ### Command options
 
 - `--runs, -r`: Number of inference runs per model (default: 5)
-- `--lim, -l`: Maximum tokens to generate per response (default: 2000)
+- `--lim, -l`: Maximum tokens to generate per response (default: 500)
 - `--prompt, -p`: Custom prompt for benchmarking
 
 ## Output

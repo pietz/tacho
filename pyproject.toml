@@ -1,6 +1,6 @@
 [project]
 name = "tacho"
-version = "0.2.0"
+version = "0.2.1"
 description = "CLI tool for measuring and comparing LLM inference speeds"
 readme = "README.md"
 authors = [
@@ -30,7 +30,7 @@ Repository = "https://github.com/pietz/tacho"
 Issues = "https://github.com/pietz/tacho/issues"
 
 [project.scripts]
-tacho = "tacho.cli:cli"
+tacho = "tacho:app"
 
 [build-system]
 requires = ["hatchling"]

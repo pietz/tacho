@@ -1,3 +1,3 @@
-from .cli import app, cli, __version__
+from .cli import app, __version__
 
-__all__ = ["app", "cli", "__version__"]
+__all__ = ["app", "__version__"]

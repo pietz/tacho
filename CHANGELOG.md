@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.1] - 2025-01-26
+
+### Changed
+- Major code refactoring for improved elegance and maintainability
+- Unified benchmark functions to eliminate code duplication (~80 lines removed)
+- Simplified progress tracking by removing complex queue system
+- Cleaner CLI argument handling using Typer's callback feature
+- Extracted metrics calculation into reusable helper function
+- Improved error handling with cleaner validation messages
+- Reduced total codebase by ~15% while maintaining all functionality
+
+### Fixed
+- Fixed module import issues in pyproject.toml entry point
+
 ## [0.1.5] - 2025-01-26
 
 ### Changed
