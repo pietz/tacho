@@ -1,8 +1,39 @@
 # Tacho
 
-CLI tool for measuring and comparing LLM inference speeds across different providers.
+A fast CLI tool for benchmarking LLM inference speed across multiple models and providers. Get tokens/second metrics to compare model performance.
+
+## Features
+
+- **Parallel benchmarking** - All models and runs execute concurrently for faster results
+- **Token-based metrics** - Measures actual tokens/second, not just response time
+- **Multi-provider support** - Works with any provider supported by LiteLLM (OpenAI, Anthropic, Google, Cohere, etc.)
+- **Configurable token limits** - Control response length for consistent comparisons
+- **Pre-flight validation** - Checks model availability and authentication before benchmarking
+
+## Quick Start
+
+Set up your API keys:
+
+```bash
+export OPENAI_API_KEY=your-key-here
+export ANTHROPIC_API_KEY=your-key-here
+```
+
+Run a benchmark using `uvx` (no installation required):
+
+```bash
+uvx tacho gpt-4o-mini claude-3-haiku-20240307
+```
 
 ## Installation
+
+For regular use, install with `uv`:
+
+```bash
+uv tool install tacho
+```
+
+Or with pip:
 
 ```bash
 pip install tacho
@@ -10,23 +41,50 @@ pip install tacho
 
 ## Usage
 
+### Basic benchmark
+
 ```bash
-# Benchmark multiple models
-tacho gpt-3.5-turbo claude-3-haiku-20240307
+# Compare models with default settings (5 runs, 2000 token limit)
+tacho gpt-4o gpt-4o-mini claude-3-haiku-20240307
 
-# Custom number of runs
-tacho gpt-4 gpt-3.5-turbo --runs 10
-
-# List available providers
-tacho list-providers
+# Custom settings
+tacho gpt-3.5-turbo claude-3-sonnet-20240229 --runs 10 --lim 500
 ```
 
-## Requirements
+### Test model availability
 
-Set up API keys as environment variables:
-- `OPENAI_API_KEY`
-- `ANTHROPIC_API_KEY`
-- etc.
+```bash
+# Check if models are accessible before benchmarking
+tacho test-models gpt-4 claude-3-opus-20240229 gemini-pro
+```
+
+### Command options
+
+- `--runs, -r`: Number of inference runs per model (default: 5)
+- `--lim, -l`: Maximum tokens to generate per response (default: 2000)
+- `--prompt, -p`: Custom prompt for benchmarking
+
+## Output
+
+Tacho displays a clean comparison table showing:
+- **Mean/Median/Min/Max tokens per second** - Primary performance metrics
+- **Average time** - Average time per inference run
+- **Average tokens** - Average tokens generated per run
+
+Models are sorted by performance (highest tokens/second first).
+
+## Supported Providers
+
+Tacho works with any provider supported by LiteLLM, including:
+- OpenAI (GPT-4, GPT-3.5, etc.)
+- Anthropic (Claude 3 family)
+- Google (Gemini Pro, PaLM)
+- Cohere (Command, Command-R)
+- Together AI (Llama, Mixtral, etc.)
+- Groq
+- And many more...
+
+Just ensure you have the appropriate API keys set as environment variables.
 
 ## License
 
