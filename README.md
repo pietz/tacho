@@ -12,10 +12,10 @@ export OPENAI_API_KEY=your-key-here
 export ANTHROPIC_API_KEY=your-key-here
 ```
 
-Run a benchmark using `uvx` (no installation required):
+Run a benchmark (requires `uv`):
 
 ```bash
-uvx tacho gpt-4.1 claude-sonmet-4
+uvx tacho gpt-4.1 claude-sonnet-4
 ```
 
 
