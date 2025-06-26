@@ -8,14 +8,23 @@ A fast CLI tool for benchmarking LLM inference speed across multiple models and 
 Set up your API keys:
 
 ```bash
-export OPENAI_API_KEY=your-key-here
-export ANTHROPIC_API_KEY=your-key-here
+export OPENAI_API_KEY=<your-key-here>
+export GEMINI_API_KEY=<your-key-here>
 ```
 
 Run a benchmark (requires `uv`):
 
 ```bash
-uvx tacho gpt-4.1 claude-sonnet-4
+uvx tacho gpt-4.1-nano gemini/gemini-2.0-flash
+
+✓ gemini/gemini-2.0-flash
+✓ gpt-4.1-nano
+┏━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━┓
+┃ Model                   ┃ Avg tok/s ┃ Min tok/s ┃ Max tok/s ┃ Avg Time ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━╇━━━━━━━━━━━╇━━━━━━━━━━━╇━━━━━━━━━━┩
+│ gemini/gemini-2.0-flash │     124.0 │     110.5 │     136.6 │     4.0s │
+│ gpt-4.1-nano            │     116.9 │     105.4 │     129.5 │     4.3s │
+└─────────────────────────┴───────────┴───────────┴───────────┴──────────┘
 ```
 
 
@@ -49,17 +58,10 @@ pip install tacho
 
 ```bash
 # Compare models with default settings (5 runs, 500 token limit)
-tacho gpt-4o gpt-4o-mini claude-3-haiku-20240307
+tacho gpt-4.1-nano gemini/gemini-2.0-flash
 
 # Custom settings
-tacho gpt-3.5-turbo claude-3-sonnet-20240229 --runs 10 --lim 500
-```
-
-### Test model availability
-
-```bash
-# Check if models are accessible before benchmarking
-tacho test-models gpt-4 claude-3-opus-20240229 gemini-pro
+tacho gpt-4.1-nano gemini/gemini-2.0-flash --runs 3 --lim 1000
 ```
 
 ### Command options
@@ -78,17 +80,4 @@ Models are sorted by performance (highest tokens/second first).
 
 ## Supported Providers
 
-Tacho works with any provider supported by LiteLLM, including:
-- OpenAI (GPT-4, GPT-3.5, etc.)
-- Anthropic (Claude 3 family)
-- Google (Gemini Pro, PaLM)
-- Cohere (Command, Command-R)
-- Together AI (Llama, Mixtral, etc.)
-- Groq
-- And many more...
-
-Just ensure you have the appropriate API keys set as environment variables.
-
-## License
-
-MIT
+Tacho works with any provider supported by LiteLLM.
