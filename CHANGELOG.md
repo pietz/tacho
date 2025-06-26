@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2025-01-26
+
+### Changed
+- Improved error handling with specific exception types for authentication, rate limits, and connection issues
+- Enhanced user feedback with clearer error messages during model validation
+- Added graceful handling of keyboard interrupts (Ctrl+C)
+- Updated README to accurately reflect output metrics
+
+### Fixed
+- Corrected README documentation about displayed metrics (removed mention of median and average tokens)
+
 ## [0.2.1] - 2025-01-26
 
 ### Changed

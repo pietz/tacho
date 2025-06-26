@@ -1,3 +1,9 @@
-from .cli import app, __version__
+"""CLI tool for measuring and comparing LLM inference speeds."""
+from importlib.metadata import version
 
-__all__ = ["app", "__version__"]
+try:
+    __version__ = version("tacho")
+except Exception:
+    __version__ = "dev"
+
+__all__ = ["__version__"]

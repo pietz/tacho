@@ -25,9 +25,10 @@ uv build
 
 ## Architecture
 
-The project is intentionally simple with all logic in a single module (`tacho/cli.py`):
+The project is intentionally simple with all logic in a single file (`tacho.py`):
 
-- **Entry point**: `tacho:app` (Typer CLI app)
+- **Entry point**: `tacho:main` - wrapper function that uses `os._exit()` to suppress warnings
+- **Main CLI app**: `app` - Typer CLI application
 - **Main functions**:
   - `validate_models()`: Pre-flight validation of model availability
   - `benchmark_model()`: Core benchmarking logic with optional progress tracking
@@ -36,7 +37,7 @@ The project is intentionally simple with all logic in a single module (`tacho/cl
 
 ## Key Design Decisions
 
-1. **Single file architecture**: All code is in `cli.py` for simplicity. Consider splitting once it gets too large
+1. **Single file architecture**: All code is in `tacho.py` for simplicity.
 2. **Async/parallel execution**: All benchmarks run concurrently using asyncio for performance.
 3. **Progress tracking**: Uses Rich library with simple callback pattern (no complex queues).
 4. **Error handling**: Pragmatic approach - validation errors are mapped to user-friendly messages.
@@ -44,20 +45,20 @@ The project is intentionally simple with all logic in a single module (`tacho/cl
 
 ## Testing & Validation
 
-Currently no test suite. To verify changes:
+Test suite uses pytest. To run tests:
 
 ```bash
-# Run a benchmark
-tacho gpt-4o-mini --runs 2 --lim 100
+# Run all tests
+pytest tests/ -v
 
-# Check help
-tacho --help
+# Run with API keys for integration tests
+OPENAI_API_KEY=xxx GEMINI_API_KEY=xxx pytest tests/
 ```
 
 ## Common Issues
 
 - **API keys**: Models require environment variables (e.g., `OPENAI_API_KEY`, `GEMINI_API_KEY`)
-
+- **Unclosed session warnings**: The `main()` function uses `os._exit()` to suppress "Unclosed client session" warnings from aiohttp. These warnings are caused by litellm with multiple providers (gemini, ollama, ...) not properly closing HTTP sessions. The warnings are harmless but appear during normal Python cleanup. Using `os._exit()` bypasses the cleanup phase where these warnings would be printed.
 
 ## Import Notes
 

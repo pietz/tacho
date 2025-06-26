@@ -9,6 +9,7 @@ A fast CLI tool for benchmarking LLM inference speed across multiple models and 
 - **Multi-provider support** - Works with any provider supported by LiteLLM (OpenAI, Anthropic, Google, Cohere, etc.)
 - **Configurable token limits** - Control response length for consistent comparisons
 - **Pre-flight validation** - Checks model availability and authentication before benchmarking
+- **Graceful error handling** - Clear error messages for authentication, rate limits, and connection issues
 
 ## Quick Start
 
@@ -67,9 +68,8 @@ tacho test-models gpt-4 claude-3-opus-20240229 gemini-pro
 ## Output
 
 Tacho displays a clean comparison table showing:
-- **Mean/Median/Min/Max tokens per second** - Primary performance metrics
+- **Avg/Min/Max tokens per second** - Primary performance metrics
 - **Average time** - Average time per inference run
-- **Average tokens** - Average tokens generated per run
 
 Models are sorted by performance (highest tokens/second first).
 
