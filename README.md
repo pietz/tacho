@@ -27,6 +27,8 @@ uvx tacho gpt-4.1-nano gemini/gemini-2.0-flash
 └─────────────────────────┴───────────┴───────────┴───────────┴──────────┘
 ```
 
+> With its default settings, tacho generates 5 runs of 500 tokens each per model producing some inference costs.
+
 
 ## Features
 
