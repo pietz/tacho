@@ -37,11 +37,10 @@ The project is intentionally simple with all logic in a single file (`tacho.py`)
 
 ## Key Design Decisions
 
-1. **Single file architecture**: All code is in `tacho.py` for simplicity.
-2. **Async/parallel execution**: All benchmarks run concurrently using asyncio for performance.
-3. **Progress tracking**: Uses Rich library with simple callback pattern (no complex queues).
-4. **Error handling**: Pragmatic approach - validation errors are mapped to user-friendly messages.
-5. **CLI design**: Supports both `tacho model1 model2` and `tacho benchmark model1 model2` syntax via Typer callback.
+1. **Async/parallel execution**: All benchmarks run concurrently using asyncio for performance.
+2. **Progress tracking**: Uses Rich library with simple callback pattern (no complex queues).
+3. **Error handling**: Pragmatic approach - validation errors are mapped to user-friendly messages.
+4. **CLI design**: Supports both `tacho model1 model2` and `tacho bench model1 model2` syntax via Typer callback.
 
 ## Testing & Validation
 

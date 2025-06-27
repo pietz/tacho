@@ -57,7 +57,7 @@
         /* CSS Variables for theming */
         :root {
             --bg-primary: #ffffff;
-            --bg-secondary: #f6f8fa;
+            --bg-secondary: #f0f2f5;
             --bg-terminal: #24292e;
             --text-primary: #24292e;
             --text-secondary: #586069;
@@ -66,13 +66,13 @@
             --accent: #0366d6;
             --accent-hover: #0256c7;
             --success: #28a745;
-            --code-bg: #f6f8fa;
+            --code-bg: #f0f2f5;
             --shadow: rgba(0, 0, 0, 0.1);
         }
         
         [data-theme="dark"] {
             --bg-primary: #0d1117;
-            --bg-secondary: #161b22;
+            --bg-secondary: #1c2128;
             --bg-terminal: #0d1117;
             --text-primary: #c9d1d9;
             --text-secondary: #8b949e;
@@ -81,7 +81,7 @@
             --accent: #58a6ff;
             --accent-hover: #79b8ff;
             --success: #39d353;
-            --code-bg: #161b22;
+            --code-bg: #1c2128;
             --shadow: rgba(0, 0, 0, 0.3);
         }
         
@@ -208,31 +208,6 @@
             font-size: 0.9rem;
         }
         
-        .copy-button {
-            position: absolute;
-            top: 0.5rem;
-            right: 0.5rem;
-            background-color: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 0.25rem 0.5rem;
-            cursor: pointer;
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            transition: all 0.2s ease;
-        }
-        
-        .copy-button:hover {
-            background-color: var(--accent);
-            color: white;
-            border-color: var(--accent);
-        }
-        
-        .copy-button.copied {
-            background-color: var(--success);
-            color: white;
-            border-color: var(--success);
-        }
         
         /* Sections */
         section {
@@ -400,15 +375,13 @@
                 <p>Run tacho with "uv" without installation:</p>
                 
                 <div class="code-block">
-                    <code id="installCmd">uvx tacho gpt-4.1-nano gemini/gemini-2.0-flash</code>
-                    <button class="copy-button" onclick="copyToClipboard('installCmd', this)">Copy</button>
+                    <code>uvx tacho gpt-4.1-nano gemini/gemini-2.0-flash</code>
                 </div>
                 
                 <p>Or install globally:</p>
                 
                 <div class="code-block">
-                    <code id="pipCmd">uv tool install tacho</code>
-                    <button class="copy-button" onclick="copyToClipboard('pipCmd', this)">Copy</button>
+                    <code>uv tool install tacho</code>
                 </div>
             </section>
             
@@ -446,15 +419,13 @@
                 <h2>Usage</h2>
                 <p>Set your API keys:</p>
                 <div class="code-block">
-                    <code id="apiKeys">export OPENAI_API_KEY=&lt;your-key&gt;
+                    <code>export OPENAI_API_KEY=&lt;your-key&gt;
 export GEMINI_API_KEY=&lt;your-key&gt;</code>
-                    <button class="copy-button" onclick="copyToClipboard('apiKeys', this)">Copy</button>
                 </div>
                 
                 <p>Run benchmarks with custom settings:</p>
                 <div class="code-block">
-                    <code id="customCmd">tacho gpt-4.1-nano claude-3.5-haiku --runs 3 --lim 1000</code>
-                    <button class="copy-button" onclick="copyToClipboard('customCmd', this)">Copy</button>
+                    <code>tacho gpt-4.1-nano claude-3.5-haiku --runs 3 --lim 1000</code>
                 </div>
             </section>
         </main>
@@ -473,62 +444,6 @@ export GEMINI_API_KEY=&lt;your-key&gt;</code>
         const html = document.documentElement;
         const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
         html.setAttribute('data-theme', systemTheme);
-        
-        // Copy to clipboard functionality
-        function copyToClipboard(elementId, button) {
-            const element = document.getElementById(elementId);
-            const text = element.textContent;
-            
-            // Try modern clipboard API first
-            if (navigator.clipboard && window.isSecureContext) {
-                navigator.clipboard.writeText(text).then(() => {
-                    showCopiedFeedback(button);
-                }).catch(err => {
-                    console.error('Clipboard API failed:', err);
-                    fallbackCopyToClipboard(text, button);
-                });
-            } else {
-                // Use fallback for insecure contexts or missing API
-                fallbackCopyToClipboard(text, button);
-            }
-        }
-        
-        // Fallback copy method using textarea
-        function fallbackCopyToClipboard(text, button) {
-            const textArea = document.createElement("textarea");
-            textArea.value = text;
-            textArea.style.position = "fixed";
-            textArea.style.left = "-999999px";
-            textArea.style.top = "-999999px";
-            document.body.appendChild(textArea);
-            textArea.focus();
-            textArea.select();
-            
-            try {
-                const successful = document.execCommand('copy');
-                if (successful) {
-                    showCopiedFeedback(button);
-                } else {
-                    console.error('Fallback copy failed');
-                }
-            } catch (err) {
-                console.error('Fallback copy error:', err);
-            }
-            
-            document.body.removeChild(textArea);
-        }
-        
-        // Show copied feedback
-        function showCopiedFeedback(button) {
-            const originalText = button.textContent;
-            button.textContent = 'Copied!';
-            button.classList.add('copied');
-            
-            setTimeout(() => {
-                button.textContent = originalText;
-                button.classList.remove('copied');
-            }, 2000);
-        }
         
         // Listen for system theme changes
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
