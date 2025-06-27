@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>tacho - LLM Speed Test | Benchmark AI Model Inference</title>
+    <meta name="description" content="Fast CLI tool for benchmarking LLM inference speed. Compare tokens/second across OpenAI, Anthropic, Google models. Zero config, parallel testing.">
+    
+    <!-- SEO Meta Tags -->
+    <meta name="keywords" content="LLM benchmark, AI model speed test, tokens per second, OpenAI GPT benchmark, Claude benchmark, Gemini benchmark, LLM performance, inference speed">
+    <meta name="author" content="pietz">
+    <link rel="canonical" href="https://pietz.github.io/tacho/">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://pietz.github.io/tacho/">
+    <meta property="og:title" content="Tacho - LLM Speed Test">
+    <meta property="og:description" content="Benchmark LLM inference speed across multiple models and providers. Get tokens/second metrics to compare model performance.">
+    <meta property="og:image" content="https://pietz.github.io/tacho/og-image.png">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://pietz.github.io/tacho/">
+    <meta property="twitter:title" content="Tacho - LLM Speed Test">
+    <meta property="twitter:description" content="Benchmark LLM inference speed across multiple models and providers. Get tokens/second metrics to compare model performance.">
+    <meta property="twitter:image" content="https://pietz.github.io/tacho/og-image.png">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Tacho",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Windows, macOS, Linux",
+        "description": "Fast CLI tool for benchmarking LLM inference speed across multiple models and providers",
+        "url": "https://pietz.github.io/tacho/",
+        "author": {
+            "@type": "Person",
+            "name": "pietz",
+            "url": "https://github.com/pietz"
+        },
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        },
+        "softwareVersion": "Latest",
+        "screenshot": "https://pietz.github.io/tacho/screenshot.png"
+    }
+    </script>
+    
+    <style>
+        /* CSS Variables for theming */
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f6f8fa;
+            --bg-terminal: #24292e;
+            --text-primary: #24292e;
+            --text-secondary: #586069;
+            --text-terminal: #e1e4e8;
+            --border: #e1e4e8;
+            --accent: #0366d6;
+            --accent-hover: #0256c7;
+            --success: #28a745;
+            --code-bg: #f6f8fa;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+        
+        [data-theme="dark"] {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-terminal: #0d1117;
+            --text-primary: #c9d1d9;
+            --text-secondary: #8b949e;
+            --text-terminal: #c9d1d9;
+            --border: #30363d;
+            --accent: #58a6ff;
+            --accent-hover: #79b8ff;
+            --success: #39d353;
+            --code-bg: #161b22;
+            --shadow: rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        
+        /* Container */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        /* Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4rem;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .logo span {
+            color: #FFC107;
+        }
+        
+        
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+        }
+        
+        .tagline {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+        
+        /* Terminal Demo */
+        .terminal {
+            background-color: var(--bg-terminal);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            box-shadow: 0 4px 6px var(--shadow);
+            overflow-x: auto;
+        }
+        
+        .terminal-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+        }
+        
+        .terminal-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: var(--text-secondary);
+            opacity: 0.3;
+        }
+        
+        .terminal-content {
+            color: var(--text-terminal);
+            font-size: 0.9rem;
+            white-space: pre;
+            overflow-x: auto;
+            text-align: left;
+            line-height: 1.4;
+            -webkit-font-smoothing: auto;
+            -moz-osx-font-smoothing: auto;
+        }
+        
+        .terminal-content .success {
+            color: var(--success);
+        }
+        
+        .terminal-content .dim {
+            opacity: 0.7;
+        }
+        
+        /* Code blocks */
+        .code-block {
+            background-color: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            position: relative;
+            overflow-x: auto;
+        }
+        
+        .code-block code {
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+        
+        .copy-button {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 0.25rem 0.5rem;
+            cursor: pointer;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            transition: all 0.2s ease;
+        }
+        
+        .copy-button:hover {
+            background-color: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+        
+        .copy-button.copied {
+            background-color: var(--success);
+            color: white;
+            border-color: var(--success);
+        }
+        
+        /* Sections */
+        section {
+            margin-bottom: 3rem;
+        }
+        
+        h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+        
+        p {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+        
+        /* Features grid */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .feature {
+            padding: 1.5rem;
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .feature:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+        
+        .feature h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+        
+        .feature p {
+            font-size: 0.9rem;
+            margin-bottom: 0;
+        }
+        
+        /* Links */
+        a {
+            color: var(--accent);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-hover);
+            text-decoration: underline;
+        }
+        
+        /* Footer */
+        footer {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            color: var(--text-secondary);
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .tagline {
+                font-size: 1.1rem;
+            }
+            
+            .container {
+                padding: 1.5rem;
+            }
+            
+            .terminal {
+                padding: 1rem;
+                font-size: 0.8rem;
+            }
+            
+            .terminal-content {
+                font-size: 0.8rem;
+            }
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        /* Typing animation for demo */
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        
+        .typing-demo {
+            overflow: hidden;
+            white-space: nowrap;
+            animation: typing 2s steps(40, end);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <span aria-label="lightning bolt">⚡</span> tacho
+            </div>
+        </header>
+        
+        <main>
+            <section class="hero animate-in">
+                <h1>Tacho - LLM Speed Test</h1>
+                <p class="tagline">Benchmark inference speed across models and providers</p>
+                
+                <div class="terminal">
+                    <div class="terminal-header">
+                        <span class="terminal-dot"></span>
+                        <span class="terminal-dot"></span>
+                        <span class="terminal-dot"></span>
+                    </div>
+                    <div class="terminal-content"><span class="dim">$</span> tacho gpt-4.1-nano gemini/gemini-2.0-flash
+
+<span class="success">✓</span> gemini/gemini-2.0-flash
+<span class="success">✓</span> gpt-4.1-nano
+┌─────────────────────────┬───────────┬───────────┬───────────┬──────────┐
+│ Model                   │ Avg tok/s │ Min tok/s │ Max tok/s │ Avg Time │
+├─────────────────────────┼───────────┼───────────┼───────────┼──────────┤
+│ gemini/gemini-2.0-flash │     124.0 │     110.5 │     136.6 │     4.0s │
+│ gpt-4.1-nano            │     116.9 │     105.4 │     129.5 │     4.3s │
+└─────────────────────────┴───────────┴───────────┴───────────┴──────────┘</div>
+                </div>
+            </section>
+            
+            <section class="animate-in" style="animation-delay: 0.1s;">
+                <h2>Quick Start</h2>
+                <p>Get started in seconds with uv or pip:</p>
+                
+                <div class="code-block">
+                    <code id="installCmd">uvx tacho gpt-4.1-nano gemini/gemini-2.0-flash</code>
+                    <button class="copy-button" onclick="copyToClipboard('installCmd', this)">Copy</button>
+                </div>
+                
+                <p>Or install globally:</p>
+                
+                <div class="code-block">
+                    <code id="pipCmd">pip install tacho</code>
+                    <button class="copy-button" onclick="copyToClipboard('pipCmd', this)">Copy</button>
+                </div>
+            </section>
+            
+            <section class="animate-in" style="animation-delay: 0.2s;">
+                <h2>Features</h2>
+                <div class="features">
+                    <div class="feature">
+                        <h3>⚡ Parallel Testing</h3>
+                        <p>Concurrent calls for faster results</p>
+                    </div>
+                    <div class="feature">
+                        <h3>📊 Token Metrics</h3>
+                        <p>Measures actual tok/s, not just response time</p>
+                    </div>
+                    <div class="feature">
+                        <h3>🔌 Multi-Provider</h3>
+                        <p>Works with all providers supported by <a href="litellm.ai">LiteLLM</a></p>
+                    </div>
+                    <div class="feature">
+                        <h3>🎯 Zero Config</h3>
+                        <p>Just set your API keys and run</p>
+                    </div>
+                    <div class="feature">
+                        <h3>🔒 100% Private</h3>
+                        <p>No telemetry or data sent to our servers</p>
+                    </div>
+                    <div class="feature">
+                        <h3>🏓 Ping Models</h3>
+                        <p>Quickly verify API keys and model access</p>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="animate-in" style="animation-delay: 0.3s;">
+                <h2>Usage</h2>
+                <p>Set your API keys:</p>
+                <div class="code-block">
+                    <code id="apiKeys">export OPENAI_API_KEY=&lt;your-key&gt;
+export GEMINI_API_KEY=&lt;your-key&gt;</code>
+                    <button class="copy-button" onclick="copyToClipboard('apiKeys', this)">Copy</button>
+                </div>
+                
+                <p>Run benchmarks with custom settings:</p>
+                <div class="code-block">
+                    <code id="customCmd">tacho gpt-4.1-nano claude-3.5-haiku --runs 3 --lim 1000</code>
+                    <button class="copy-button" onclick="copyToClipboard('customCmd', this)">Copy</button>
+                </div>
+            </section>
+        </main>
+        
+        <footer>
+            <div class="footer-links">
+                <a href="https://github.com/pietz/tacho" target="_blank" rel="noopener" aria-label="View Tacho on GitHub">GitHub</a>
+                <a href="https://pypi.org/project/tacho/" target="_blank" rel="noopener" aria-label="View Tacho on PyPI">PyPI</a>
+            </div>
+            <p>Made with <span aria-label="lightning">⚡</span> by <a href="https://pietz.ai" target="_blank" rel="noopener" aria-label="View pietz on GitHub">pietz</a></p>
+        </footer>
+    </div>
+    
+    <script>
+        // Apply system theme preference
+        const html = document.documentElement;
+        const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        html.setAttribute('data-theme', systemTheme);
+        
+        // Copy to clipboard functionality
+        function copyToClipboard(elementId, button) {
+            const element = document.getElementById(elementId);
+            const text = element.textContent;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = button.textContent;
+                button.textContent = 'Copied!';
+                button.classList.add('copied');
+                
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy:', err);
+            });
+        }
+        
+        // Listen for system theme changes
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+            const newTheme = e.matches ? 'dark' : 'light';
+            html.setAttribute('data-theme', newTheme);
+        });
+    </script>
+</body>
+</html>
