@@ -1,4 +1,4 @@
-# tacho - LLM Speed Test
+# ⚡ tacho - LLM Speed Test
 
 A fast CLI tool for benchmarking LLM inference speed across multiple models and providers. Get tokens/second metrics to compare model performance.
 
