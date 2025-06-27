@@ -63,3 +63,29 @@ class TestCLIIntegration:
             if original_key:
                 os.environ["OPENAI_API_KEY"] = original_key
                 
+    def test_ping_single_model(self):
+        if not os.getenv("OPENAI_API_KEY"):
+            pytest.skip("OPENAI_API_KEY not set")
+            
+        result = runner.invoke(app, ["ping", "gpt-4.1-mini"])
+        assert result.exit_code == 0
+        assert "✓ gpt-4.1-mini" in result.stdout
+        assert "models are accessible" in result.stdout
+        
+    def test_ping_multiple_models(self):
+        if not os.getenv("OPENAI_API_KEY"):
+            pytest.skip("OPENAI_API_KEY not set")
+            
+        result = runner.invoke(app, ["ping", "gpt-4.1-mini", "invalid-model-xyz"])
+        assert result.exit_code == 0
+        assert "✓ gpt-4.1-mini" in result.stdout
+        assert "✗ invalid-model-xyz" in result.stdout
+        assert "1/2 models are accessible" in result.stdout
+        
+    def test_ping_all_invalid_models(self):
+        result = runner.invoke(app, ["ping", "invalid-model-1", "invalid-model-2"])
+        assert result.exit_code == 1
+        assert "✗ invalid-model-1" in result.stdout
+        assert "✗ invalid-model-2" in result.stdout
+        assert "No models are accessible" in result.stdout
+                

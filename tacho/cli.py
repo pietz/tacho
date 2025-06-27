@@ -21,6 +21,11 @@ def cli_main(
     lim: int = typer.Option(500, "--lim", "-l"),
 ):
     """Default command when models are provided directly"""
+    # Check if the first argument is a known command
+    if models and models[0] in ["bench", "ping"]:
+        # This is a subcommand, let it handle the arguments
+        return
+    
     if ctx.invoked_subcommand is None and models:
         bench(models, runs, prompt, lim)
 
@@ -79,6 +84,33 @@ def bench(
         )
     
     console.print(table)
+
+
+@app.command()
+def ping(
+    models: list[str] = typer.Argument(
+        ...,
+        help="List of models to check availability (e.g., gpt-4o gemini-2.5-flash)",
+    ),
+):
+    """Check which LLM models are accessible without running benchmarks"""
+    res = asyncio.run(ping_models(models))
+    
+    # Count successful models
+    successful = sum(res)
+    
+    # Print summary
+    console.print()
+    if successful == len(models):
+        console.print(f"[bold green]All {len(models)} models are accessible![/bold green]")
+    elif successful > 0:
+        console.print(f"[bold yellow]{successful}/{len(models)} models are accessible[/bold yellow]")
+    else:
+        console.print("[bold red]No models are accessible[/bold red]")
+    
+    # Exit with appropriate code
+    if successful == 0:
+        raise typer.Exit(1)
 
 
 def main():
