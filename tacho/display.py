@@ -5,8 +5,6 @@ from rich.console import Console
 from rich.progress import Progress, SpinnerColumn, TextColumn
 from rich.table import Table
 
-from collections import defaultdict
-
 from .ai import ping_model, bench_model
 
 console = Console()
@@ -16,9 +14,11 @@ async def run_pings(models: list[str]):
     """Run ping checks with progress indicator"""
     spinner = SpinnerColumn()
     text = TextColumn("[progress.description]{task.description}")
-    with Progress(spinner, text, transient=True) as prog:
+    with Progress(spinner, text, transient=True, console=console) as prog:
         prog.add_task("[bold cyan]Checking Model Access...[bold cyan]", total=None)
-        return await asyncio.gather(*[ping_model(m) for m in models])
+        return await asyncio.gather(
+            *[ping_model(m, console=prog.console) for m in models]
+        )
 
 
 async def run_benchmarks(models: list[str], runs: int, tokens: int):
@@ -36,15 +36,16 @@ async def run_benchmarks(models: list[str], runs: int, tokens: int):
 
 def calculate_metrics(stats: list) -> dict:
     """Calculate performance metrics from benchmark results"""
-    tps = [t / s for t, s in stats if s > 0]
+    tps = [t / s for s, t in stats if s > 0]
     return [mean(tps), min(tps), max(tps), mean([x[0] for x in stats])]
 
 
 def display_results(models: list[str], runs: int, results: list):
     """Process and display benchmark results in a formatted table"""
     metrics = []
-    for model in models:
-        metrics.append([model] + calculate_metrics(results))
+    for i, model in enumerate(models):
+        model_results = results[i * runs : (i + 1) * runs]
+        metrics.append([model] + calculate_metrics(model_results))
     metrics = sorted(metrics, key=lambda x: x[1], reverse=True)
 
     table = Table(show_header=True, header_style="bold magenta")
@@ -54,7 +55,7 @@ def display_results(models: list[str], runs: int, results: list):
     table.add_column("Max tok/s", justify="right")
     table.add_column("Avg Time", justify="right")
 
-    for row in metrics:
-        table.add_row(**row)
+    for m in metrics:
+        table.add_row(m[0], f"{m[1]:.1f}", f"{m[2]:.1f}", f"{m[3]:.1f}", f"{m[4]:.2f}s")
 
     console.print(table)

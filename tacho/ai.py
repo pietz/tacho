@@ -14,7 +14,7 @@ async def llm(model: str, prompt: str, tokens: int | None = None):
     return await litellm.acompletion(model, messages, max_tokens=tokens)
 
 
-async def ping_model(model: str) -> bool:
+async def ping_model(model: str, console) -> bool:
     try:
         await llm(model, VALIDATION_PROMPT, 1)
         console.print(f"[green]✓[/green] {model}")
