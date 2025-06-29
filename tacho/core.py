@@ -1,6 +1,5 @@
 import asyncio
 import time
-import logging
 from statistics import mean, median
 from collections import defaultdict
 
@@ -14,12 +13,6 @@ from litellm import (
     RateLimitError,
     BadRequestError,
 )
-
-# Suppress litellm debug output and logging
-litellm.suppress_debug_info = True
-litellm.set_verbose = False
-logging.getLogger("LiteLLM").setLevel(logging.CRITICAL)
-logging.getLogger("litellm").setLevel(logging.CRITICAL)
 
 console = Console()
 
@@ -44,33 +37,20 @@ def calculate_metrics(times: list[float], tokens: list[int]) -> dict:
     }
 
 
+async def llm(model: str, prompt: str, tokens: int | None = None):
+    messages = [{"role": "user", "content": prompt}]
+    return await litellm.acompletion(model, messages, max_tokens=tokens)
+
+
 async def ping_model(model: str) -> bool:
     try:
-        messages = [{"role": "user", "content": VALIDATION_PROMPT}]
-        await litellm.acompletion(model, messages, max_tokens=1)
+        await llm(model, VALIDATION_PROMPT, 1)
         console.print(f"[green]✓[/green] {model}")
         return True
-    except AuthenticationError:
-        console.print(f"[red]✗[/red] {model} - Authentication failed (check API key)")
+    except Exception as e:
+        console.print("yes")
+        console.print(f"[red]✗[/red] {model} - {str(e)}")
         return False
-    except NotFoundError:
-        console.print(f"[red]✗[/red] {model} - Model not found")
-        return False
-    except (APIConnectionError, RateLimitError, BadRequestError) as e:
-        # Log the specific error type for debugging
-        error_type = type(e).__name__
-        console.print(f"[red]✗[/red] {model} - {error_type}")
-        return False
-
-
-async def bench_model(model: str, prompt: str, max_tokens: int) -> tuple[float, int]:
-    """Measure inference time for a single run and return time and tokens"""
-    start_time = time.time()
-    messages = [{"role": "user", "content": prompt}]
-    response = await litellm.acompletion(model, messages, max_tokens=max_tokens)
-    duration = time.time() - start_time
-    tokens = response.usage.completion_tokens if response.usage else 0
-    return duration, tokens
 
 
 async def ping_models(models: list[str]) -> dict[str, tuple[bool, str]]:
@@ -88,8 +68,17 @@ async def ping_models(models: list[str]) -> dict[str, tuple[bool, str]]:
     return results
 
 
+async def bench_model(model: str, max_tokens: int) -> tuple[float, int]:
+    """Measure inference time for a single run and return time and tokens"""
+    start_time = time.time()
+    response = await llm(model, BENCHMARK_PROMPT, max_tokens)
+    duration = time.time() - start_time
+    tokens = response.usage.completion_tokens if response.usage else 0
+    return duration, tokens
+
+
 async def bench_models(
-    models: list[str], prompt: str, runs: int, max_tokens: int
+    models: list[str], runs: int, max_tokens: int
 ) -> dict:
     """Run benchmarks for all models in parallel"""
     with Progress(
@@ -104,15 +93,14 @@ async def bench_models(
 
         # Create tasks with model associations
         tasks = [
-            (model, bench_model(model, prompt, max_tokens))
+            (model, bench_model(model, max_tokens))
             for model in models
             for _ in range(runs)
         ]
-        
+
         # Execute all benchmarks in parallel
         results = await asyncio.gather(
-            *[task for _, task in tasks], 
-            return_exceptions=True
+            *[task for _, task in tasks], return_exceptions=True
         )
 
     # Group results by model
@@ -124,8 +112,9 @@ async def bench_models(
     # Calculate metrics for each model
     return {
         model: calculate_metrics(
-            [time for time, _ in data],
-            [tokens for _, tokens in data]
-        ) if data else {}
+            [time for time, _ in data], [tokens for _, tokens in data]
+        )
+        if data
+        else {}
         for model, data in model_results.items()
     }

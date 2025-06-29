@@ -1,6 +1,6 @@
 [project]
 name = "tacho"
-version = "0.4.0"
+version = "0.5.0"
 description = "CLI tool for measuring and comparing LLM inference speeds"
 readme = "README.md"
 authors = [
@@ -21,7 +21,8 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
 dependencies = [
-    "litellm>=1.73.1",
+    "litellm[bedrock,vertex_ai]>=1.73.1",
+    "python-dotenv>=1.1.1",
     "rich>=14.0.0",
     "typer>=0.16.0",
 ]
@@ -42,5 +43,6 @@ build-backend = "hatchling.build"
 dev = [
     "pytest>=8.4.1",
     "pytest-asyncio>=1.0.0",
+    "pytest-mock>=3.14.0",
     "python-dotenv>=1.1.1",
 ]

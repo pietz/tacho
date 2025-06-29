@@ -42,18 +42,6 @@ The project is intentionally simple with all logic in a single file (`tacho.py`)
 3. **Error handling**: Pragmatic approach - validation errors are mapped to user-friendly messages.
 4. **CLI design**: Supports both `tacho model1 model2` and `tacho bench model1 model2` syntax via Typer callback.
 
-## Testing & Validation
-
-Test suite uses pytest. To run tests:
-
-```bash
-# Run all tests
-pytest tests/ -v
-
-# Run with API keys for integration tests
-OPENAI_API_KEY=xxx GEMINI_API_KEY=xxx pytest tests/
-```
-
 ## Common Issues
 
 - **API keys**: Models require environment variables (e.g., `OPENAI_API_KEY`, `GEMINI_API_KEY`)
