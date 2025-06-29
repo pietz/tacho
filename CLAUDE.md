@@ -15,7 +15,7 @@ This project uses `uv` for Python dependency management. Key commands:
 uv sync
 
 # Run the CLI directly
-tacho gpt-4.1-mini gemini-2.5-flash
+tacho gpt-4.1-mini gemini-2.0-flash
 
 # Build the package
 uv build
@@ -25,14 +25,18 @@ uv build
 
 ## Architecture
 
-The project is intentionally simple with all logic in a single file (`tacho.py`):
+The project has been refactored into a modular structure:
 
-- **Entry point**: `tacho:main` - wrapper function that uses `os._exit()` to suppress warnings
-- **Main CLI app**: `app` - Typer CLI application
+- **Entry point**: `tacho.cli:main` - wrapper function that uses `os._exit()` to suppress warnings
+- **Core modules**:
+  - `cli.py`: Main CLI app using Typer, handles command parsing
+  - `ai.py`: Core benchmarking logic with async model benchmarking
+  - `display.py`: Results presentation and metrics calculation
+  - `config.py`: Configuration and constants
 - **Main functions**:
   - `validate_models()`: Pre-flight validation of model availability
-  - `benchmark_model()`: Core benchmarking logic with optional progress tracking
-  - `calculate_metrics()`: Extracts performance metrics from raw benchmark data
+  - `benchmark_model()`: Core benchmarking logic in ai.py
+  - `calculate_metrics()`: Extracts performance metrics from raw benchmark data (in display.py)
   - `run_benchmarks()`: Orchestrates parallel benchmarking of multiple models
 
 ## Key Design Decisions
