@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.0] - 2025-01-29
+
+### Added
+- Comprehensive unit test suite with 31 tests covering all major components
+- Test configuration in `pytest.ini` with markers for unit and integration tests
+- Shared test fixtures in `conftest.py` for mocking external dependencies
+- Tests for configuration module (`test_config.py`)
+- Tests for AI/benchmarking module (`test_ai.py`)
+- Tests for display/metrics module (`test_display.py`)
+- Tests for CLI commands (`test_cli.py`)
+- Development dependencies for testing (pytest, pytest-asyncio, pytest-mock)
+
+### Changed
+- Project structure now includes a dedicated `tests/` directory
+- All external API calls are properly mocked in tests for reliability
+
+### Developer Experience
+- Run tests with `uv run pytest` or `uv run pytest -v` for verbose output
+- Tests achieve high coverage of core functionality without requiring API keys
+
 ## [0.5.0] - 2025-01-27
 
 ### Added

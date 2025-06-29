@@ -83,3 +83,38 @@ Models are sorted by performance (highest tokens/second first).
 ## Supported Providers
 
 Tacho works with any provider supported by LiteLLM.
+
+## Development
+
+To contribute to Tacho, clone the repository and install development dependencies:
+
+```bash
+git clone https://github.com/pietz/tacho.git
+cd tacho
+uv sync
+```
+
+### Running Tests
+
+Tacho includes a comprehensive test suite with full mocking of external API calls:
+
+```bash
+# Run all tests
+uv run pytest
+
+# Run with verbose output
+uv run pytest -v
+
+# Run specific test file
+uv run pytest tests/test_cli.py
+
+# Run with coverage
+uv run pytest --cov=tacho
+```
+
+The test suite includes:
+- Unit tests for all core modules
+- Mocked LiteLLM API calls (no API keys required)
+- CLI command testing
+- Async function testing
+- Edge case coverage

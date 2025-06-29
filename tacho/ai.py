@@ -1,9 +1,6 @@
 import time
 
 import litellm
-from rich.console import Console
-
-console = Console()
 
 BENCHMARK_PROMPT = """Generate a ~2000 word summary of the history of the USA."""
 VALIDATION_PROMPT = "Do you have time to help? (yes/no)"

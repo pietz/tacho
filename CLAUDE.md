@@ -46,6 +46,35 @@ The project has been refactored into a modular structure:
 3. **Error handling**: Pragmatic approach - validation errors are mapped to user-friendly messages.
 4. **CLI design**: Supports both `tacho model1 model2` and `tacho bench model1 model2` syntax via Typer callback.
 
+## Testing
+
+The project includes a comprehensive test suite in the `tests/` directory:
+
+- **Test structure**:
+  - `conftest.py`: Shared fixtures and mocks for all tests
+  - `test_config.py`: Tests for configuration and environment handling
+  - `test_ai.py`: Tests for LLM interaction and benchmarking
+  - `test_display.py`: Tests for metrics calculation and display
+  - `test_cli.py`: Tests for CLI commands and argument parsing
+
+- **Running tests**:
+  ```bash
+  # Run all tests
+  uv run pytest
+  
+  # Run with verbose output
+  uv run pytest -v
+  
+  # Run specific test marker
+  uv run pytest -m unit
+  ```
+
+- **Key testing patterns**:
+  - All external API calls are mocked (no API keys needed for tests)
+  - Async functions are tested with `pytest-asyncio`
+  - CLI testing uses Typer's test runner
+  - Fixtures provide isolated test environments
+
 ## Common Issues
 
 - **API keys**: Models require environment variables (e.g., `OPENAI_API_KEY`, `GEMINI_API_KEY`)
