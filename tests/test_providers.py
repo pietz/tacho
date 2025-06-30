@@ -24,7 +24,7 @@ TEST_MODELS = [
     ("claude-sonnet-4-20250514", ["ANTHROPIC_API_KEY"]),
     ("anthropic/claude-sonnet-4-20250514", ["ANTHROPIC_API_KEY"]),
     # Google models
-    ("gemini/gemini-2.5-flash", ["GEMINI_API_KEY"]),
+    ("gemini/gemini-2.0-flash", ["GEMINI_API_KEY"]),
     # AWS Bedrock
     (
         "bedrock/us.anthropic.claude-sonnet-4-20250514-v1:0",
@@ -32,7 +32,7 @@ TEST_MODELS = [
     ),
     # Google Vertex AI
     (
-        "vertex_ai/gemini-2.5-flash",
+        "vertex_ai/gemini-2.0-flash",
         ["GOOGLE_APPLICATION_CREDENTIALS", "VERTEXAI_PROJECT", "VERTEXAI_LOCATION"],
     ),
     # Local models
