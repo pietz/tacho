@@ -63,8 +63,9 @@ pip install tacho
 # Compare models with default settings (5 runs, 500 token limit)
 tacho gpt-4.1-nano gemini/gemini-2.0-flash
 
-# Custom settings
-tacho gpt-4.1-nano gemini/gemini-2.0-flash --runs 3 --tokens 1000
+# Custom settings (options must come before model names)
+tacho --runs 3 --tokens 1000 gpt-4.1-nano gemini/gemini-2.0-flash
+tacho -r 3 -t 1000 gpt-4.1-nano gemini/gemini-2.0-flash
 ```
 
 ### Command options
@@ -72,6 +73,10 @@ tacho gpt-4.1-nano gemini/gemini-2.0-flash --runs 3 --tokens 1000
 - `--runs, -r`: Number of inference runs per model (default: 5)
 - `--tokens, -t`: Maximum tokens to generate per response (default: 500)
 - `--prompt, -p`: Custom prompt for benchmarking
+
+**Note:** When using the shorthand syntax (without the `bench` subcommand), options must be placed before model names. For example:
+- ✅ `tacho -t 2000 gpt-4.1-mini`
+- ❌ `tacho gpt-4.1-mini -t 2000`
 
 ## Output
 
