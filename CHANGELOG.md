@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.1] - 2025-01-30
+
+### Added
+- Comprehensive error handling tests for all major LiteLLM error types
+- User-friendly error messages for different error scenarios:
+  - Authentication errors now show which API key to check
+  - Model not found errors suggest checking the model name
+  - Rate limit errors advise trying again later
+  - Connection errors for Ollama specifically mention starting the server
+  - Generic errors are truncated to 80 characters for readability
+
+### Changed
+- Simplified error handling by focusing on the most common error types
+- Improved error message formatting with consistent capitalization
+
 ## [0.7.0] - 2025-01-30
 
 ### Added

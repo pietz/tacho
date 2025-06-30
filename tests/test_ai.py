@@ -1,6 +1,15 @@
 from unittest.mock import MagicMock
 
 import pytest
+from litellm import (
+    AuthenticationError,
+    BadRequestError,
+    NotFoundError,
+    RateLimitError,
+    APIConnectionError,
+    ContextWindowExceededError,
+    ContentPolicyViolationError,
+)
 
 from tacho.ai import llm, ping_model, bench_model, BENCHMARK_PROMPT, VALIDATION_PROMPT
 
@@ -60,9 +69,9 @@ class TestAI:
         # Verify failure
         assert result is False
 
-        # Verify error output
+        # Verify error output - now includes "..." for generic exceptions
         mock_console_instance.print.assert_called_once_with(
-            "[red]✗[/red] invalid-model - API Error"
+            "[red]✗[/red] invalid-model - API Error..."
         )
 
     @pytest.mark.asyncio
@@ -152,3 +161,101 @@ class TestAI:
         # Should only count regular completion tokens
         assert duration == 2.0
         assert tokens == 100
+
+    @pytest.mark.asyncio
+    async def test_ping_model_authentication_error(self, mock_litellm):
+        """Test ping_model handling of authentication errors"""
+        mock_litellm.side_effect = AuthenticationError(
+            message="Invalid API key provided. You can find your API key at https://platform.openai.com/api-keys.",
+            llm_provider="openai",
+            model="gpt-4o-mini"
+        )
+        mock_console_instance = MagicMock()
+
+        result = await ping_model("gpt-4o-mini", mock_console_instance)
+
+        assert result is False
+        mock_console_instance.print.assert_called_once()
+        call_args = mock_console_instance.print.call_args[0][0]
+        assert "[red]✗[/red] gpt-4o-mini" in call_args
+        assert "Authentication Failed" in call_args
+        assert "OPENAI_API_KEY" in call_args
+
+    @pytest.mark.asyncio
+    async def test_ping_model_not_found_error(self, mock_litellm):
+        """Test ping_model handling of model not found errors"""
+        mock_litellm.side_effect = NotFoundError(
+            message="The model 'gpt-8' does not exist",
+            llm_provider="openai",
+            model="gpt-8"
+        )
+        mock_console_instance = MagicMock()
+
+        result = await ping_model("gpt-8", mock_console_instance)
+
+        assert result is False
+        mock_console_instance.print.assert_called_once()
+        call_args = mock_console_instance.print.call_args[0][0]
+        assert "[red]✗[/red] gpt-8" in call_args
+        assert "Model Not Found" in call_args
+
+    @pytest.mark.asyncio
+    async def test_ping_model_rate_limit_error(self, mock_litellm):
+        """Test ping_model handling of rate limit errors"""
+        mock_litellm.side_effect = RateLimitError(
+            message="Rate limit exceeded. Please retry after 60 seconds",
+            llm_provider="openai",
+            model="gpt-4o-mini"
+        )
+        mock_console_instance = MagicMock()
+
+        result = await ping_model("gpt-4o-mini", mock_console_instance)
+
+        assert result is False
+        mock_console_instance.print.assert_called_once()
+        call_args = mock_console_instance.print.call_args[0][0]
+        assert "[red]✗[/red] gpt-4o-mini" in call_args
+        assert "Rate Limit Exceeded" in call_args
+
+    @pytest.mark.asyncio
+    async def test_ping_model_api_connection_error(self, mock_litellm):
+        """Test ping_model handling of connection errors"""
+        mock_litellm.side_effect = APIConnectionError(
+            message="Failed to connect to Ollama server at localhost:11434",
+            llm_provider="ollama",
+            model="ollama/deepseek-r1"
+        )
+        mock_console_instance = MagicMock()
+
+        result = await ping_model("ollama/deepseek-r1", mock_console_instance)
+
+        assert result is False
+        mock_console_instance.print.assert_called_once()
+        call_args = mock_console_instance.print.call_args[0][0]
+        assert "[red]✗[/red] ollama/deepseek-r1" in call_args
+        assert "Ollama server not running" in call_args
+        assert "ollama serve" in call_args
+
+    @pytest.mark.asyncio
+    async def test_bench_model_authentication_error(self, mock_litellm):
+        """Test that authentication errors propagate from bench_model"""
+        mock_litellm.side_effect = AuthenticationError(
+            message="Invalid API key",
+            llm_provider="openai",
+            model="gpt-4o-mini"
+        )
+
+        with pytest.raises(AuthenticationError, match="Invalid API key"):
+            await bench_model("gpt-4o-mini", 500)
+
+    @pytest.mark.asyncio
+    async def test_bench_model_context_window_error(self, mock_litellm):
+        """Test that context window errors propagate from bench_model"""
+        mock_litellm.side_effect = ContextWindowExceededError(
+            message="This model's maximum context length is 4096 tokens",
+            llm_provider="openai",
+            model="gpt-3.5-turbo"
+        )
+
+        with pytest.raises(ContextWindowExceededError, match="context length"):
+            await bench_model("gpt-3.5-turbo", 5000)

@@ -152,3 +152,121 @@ async def test_invalid_model_handling():
     # Test invalid provider prefix
     with pytest.raises((BadRequestError, NotFoundError)):
         await llm("invalid-provider/gpt-4", "Hi", tokens=1)
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_litellm_error_types():
+    """Test handling of specific LiteLLM error types."""
+    from unittest.mock import AsyncMock, patch
+    
+    # Test AuthenticationError (401) - Invalid API key
+    with patch('litellm.acompletion', new_callable=AsyncMock) as mock_completion:
+        mock_completion.side_effect = AuthenticationError(
+            message="Invalid API key provided",
+            llm_provider="openai",
+            model="gpt-4o-mini"
+        )
+        
+        with pytest.raises(AuthenticationError) as exc_info:
+            await llm("gpt-4o-mini", "Hi", tokens=1)
+        
+        assert "Invalid API key" in str(exc_info.value)
+        assert hasattr(exc_info.value, "llm_provider")
+        assert exc_info.value.llm_provider == "openai"
+    
+    # Test NotFoundError (404) - Model not found
+    with patch('litellm.acompletion', new_callable=AsyncMock) as mock_completion:
+        mock_completion.side_effect = NotFoundError(
+            message="The model 'gpt-8' does not exist",
+            llm_provider="openai",
+            model="gpt-8"
+        )
+        
+        with pytest.raises(NotFoundError) as exc_info:
+            await llm("gpt-8", "Hi", tokens=1)
+        
+        assert "does not exist" in str(exc_info.value)
+    
+    # Test RateLimitError (429) - Rate limit exceeded
+    with patch('litellm.acompletion', new_callable=AsyncMock) as mock_completion:
+        mock_completion.side_effect = RateLimitError(
+            message="Rate limit exceeded. Please retry after 60 seconds",
+            llm_provider="openai",
+            model="gpt-4o-mini"
+        )
+        
+        with pytest.raises(RateLimitError) as exc_info:
+            await llm("gpt-4o-mini", "Hi", tokens=1)
+        
+        assert "Rate limit" in str(exc_info.value)
+    
+    # Test BadRequestError (400) - Invalid request
+    with patch('litellm.acompletion', new_callable=AsyncMock) as mock_completion:
+        mock_completion.side_effect = BadRequestError(
+            message="Invalid request parameters",
+            llm_provider="anthropic",
+            model="claude-sonnet-4"
+        )
+        
+        with pytest.raises(BadRequestError) as exc_info:
+            await llm("claude-sonnet-4", "Hi", tokens=1)
+        
+        assert "Invalid request" in str(exc_info.value)
+    
+    # Test APIConnectionError (500) - Connection issues
+    with patch('litellm.acompletion', new_callable=AsyncMock) as mock_completion:
+        mock_completion.side_effect = APIConnectionError(
+            message="Failed to connect to API server",
+            llm_provider="ollama",
+            model="ollama/deepseek-r1"
+        )
+        
+        with pytest.raises(APIConnectionError) as exc_info:
+            await llm("ollama/deepseek-r1", "Hi", tokens=1)
+        
+        assert "Failed to connect" in str(exc_info.value)
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_context_window_exceeded_error():
+    """Test specific handling of context window exceeded errors."""
+    from unittest.mock import AsyncMock, patch
+    from litellm import ContextWindowExceededError
+    
+    with patch('litellm.acompletion', new_callable=AsyncMock) as mock_completion:
+        mock_completion.side_effect = ContextWindowExceededError(
+            message="This model's maximum context length is 4096 tokens",
+            model="gpt-3.5-turbo",
+            llm_provider="openai"
+        )
+        
+        with pytest.raises(ContextWindowExceededError) as exc_info:
+            await llm("gpt-3.5-turbo", "Very long prompt..." * 1000, tokens=1000)
+        
+        assert "context length" in str(exc_info.value).lower()
+        # ContextWindowExceededError is a subclass of BadRequestError
+        assert isinstance(exc_info.value, BadRequestError)
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_content_policy_violation_error():
+    """Test specific handling of content policy violation errors."""
+    from unittest.mock import AsyncMock, patch
+    from litellm import ContentPolicyViolationError
+    
+    with patch('litellm.acompletion', new_callable=AsyncMock) as mock_completion:
+        mock_completion.side_effect = ContentPolicyViolationError(
+            message="Your request was rejected due to content policy violations",
+            model="gpt-4o-mini",
+            llm_provider="openai"
+        )
+        
+        with pytest.raises(ContentPolicyViolationError) as exc_info:
+            await llm("gpt-4o-mini", "Inappropriate content", tokens=100)
+        
+        assert "content policy" in str(exc_info.value).lower()
+        # ContentPolicyViolationError is a subclass of BadRequestError
+        assert isinstance(exc_info.value, BadRequestError)

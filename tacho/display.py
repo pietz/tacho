@@ -68,7 +68,7 @@ def display_results(models: list[str], runs: int, results: list):
             f"{m[1]:.1f}",
             f"{m[2]:.1f}",
             f"{m[3]:.1f}",
-            f"{m[4]:.1f}s",
+            f"{m[4]:.1f}s",#
             f"{m[5]:.0f}",
         )
 
