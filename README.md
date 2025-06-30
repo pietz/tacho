@@ -15,16 +15,17 @@ export GEMINI_API_KEY=<your-key-here>
 Run a benchmark (requires `uv`):
 
 ```bash
-uvx tacho gpt-4.1-nano gemini/gemini-2.0-flash
-
-✓ gemini/gemini-2.0-flash
-✓ gpt-4.1-nano
-┌─────────────────────────┬───────────┬───────────┬───────────┬──────────┐
-│ Model                   │ Avg tok/s │ Min tok/s │ Max tok/s │ Avg Time │
-├─────────────────────────┼───────────┼───────────┼───────────┼──────────┤
-│ gemini/gemini-2.0-flash │     124.0 │     110.5 │     136.6 │     4.0s │
-│ gpt-4.1-nano            │     116.9 │     105.4 │     129.5 │     4.3s │
-└─────────────────────────┴───────────┴───────────┴───────────┴──────────┘
+uvx tacho gpt-4.1 gemini/gemini-2.5-pro vertex_ai/claude-sonnet-4@20250514
+✓ gpt-4.1
+✓ vertex_ai/claude-sonnet-4@20250514
+✓ gemini/gemini-2.5-pro
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━┳━━━━━━━┳━━━━━━━━┓
+┃ Model                              ┃ Avg t/s ┃ Min t/s ┃ Max t/s ┃  Time ┃ Tokens ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━╇━━━━━━━╇━━━━━━━━┩
+│ gemini/gemini-2.5-pro              │    80.0 │    56.7 │   128.4 │ 13.5s │    998 │
+│ vertex_ai/claude-sonnet-4@20250514 │    48.9 │    44.9 │    51.6 │ 10.2s │    500 │
+│ gpt-4.1                            │    41.5 │    35.1 │    49.9 │ 12.3s │    500 │
+└────────────────────────────────────┴─────────┴─────────┴─────────┴───────┴────────┘
 ```
 
 > With its default settings, tacho generates 5 runs of 500 tokens each per model producing some inference costs.
