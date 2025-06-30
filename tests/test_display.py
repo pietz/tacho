@@ -14,8 +14,8 @@ class TestDisplay:
 
         metrics = calculate_metrics(stats)
 
-        # Expected: [mean_tps, min_tps, max_tps, mean_time]
-        assert len(metrics) == 4
+        # Expected: [mean_tps, min_tps, max_tps, mean_time, mean_tokens]
+        assert len(metrics) == 5
 
         # Calculate expected values
         tps_values = [100 / 2.0, 125 / 2.5, 150 / 3.0]  # [50, 50, 50]
@@ -23,6 +23,7 @@ class TestDisplay:
         assert metrics[1] == min(tps_values)  # min tps = 50
         assert metrics[2] == max(tps_values)  # max tps = 50
         assert metrics[3] == mean([2.0, 2.5, 3.0])  # mean time = 2.5
+        assert metrics[4] == mean([100, 125, 150])  # mean tokens = 125
 
     def test_calculate_metrics_varying_performance(self):
         """Test metrics with varying performance results"""
@@ -35,6 +36,7 @@ class TestDisplay:
         assert metrics[1] == 25  # min
         assert metrics[2] == 100  # max
         assert metrics[3] == pytest.approx(2.33, rel=0.01)  # mean time
+        assert metrics[4] == 100  # mean tokens (all are 100)
 
     def test_calculate_metrics_zero_time_handling(self):
         """Test that zero times are filtered out"""
@@ -48,6 +50,7 @@ class TestDisplay:
         assert metrics[1] == 50  # min tps
         assert metrics[2] == 50  # max tps
         assert metrics[3] == pytest.approx(1.67, rel=0.01)  # mean time (including zero)
+        assert metrics[4] == pytest.approx(116.67, rel=0.01)  # mean tokens = (100+100+150)/3
 
     def test_calculate_metrics_empty_results(self):
         """Test metrics calculation with empty results"""
@@ -126,7 +129,7 @@ class TestDisplay:
         mock_table_class.assert_called_once()
 
         # Verify columns were added
-        assert mock_table.add_column.call_count == 5  # Model, Avg, Min, Max, Time
+        assert mock_table.add_column.call_count == 6  # Model, Avg, Min, Max, Time, Tokens
 
         # Verify rows were added (one per model)
         assert mock_table.add_row.call_count == 2

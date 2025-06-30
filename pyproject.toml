@@ -1,6 +1,6 @@
 [project]
 name = "tacho"
-version = "0.6.0"
+version = "0.7.0"
 description = "CLI tool for measuring and comparing LLM inference speeds"
 readme = "README.md"
 authors = [

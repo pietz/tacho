@@ -37,7 +37,13 @@ async def run_benchmarks(models: list[str], runs: int, tokens: int):
 def calculate_metrics(stats: list) -> dict:
     """Calculate performance metrics from benchmark results"""
     tps = [t / s for s, t in stats if s > 0]
-    return [mean(tps), min(tps), max(tps), mean([x[0] for x in stats])]
+    return [
+        mean(tps),
+        min(tps),
+        max(tps),
+        mean([x[0] for x in stats]),
+        mean([x[1] for x in stats]),
+    ]
 
 
 def display_results(models: list[str], runs: int, results: list):
@@ -50,12 +56,20 @@ def display_results(models: list[str], runs: int, results: list):
 
     table = Table(show_header=True, header_style="bold magenta")
     table.add_column("Model", style="cyan", no_wrap=True)
-    table.add_column("Avg tok/s", justify="right", style="bold green")
-    table.add_column("Min tok/s", justify="right")
-    table.add_column("Max tok/s", justify="right")
-    table.add_column("Avg Time", justify="right")
+    table.add_column("Avg t/s", justify="right", style="bold green")
+    table.add_column("Min t/s", justify="right")
+    table.add_column("Max t/s", justify="right")
+    table.add_column("Time", justify="right")
+    table.add_column("Tokens", justify="right")
 
     for m in metrics:
-        table.add_row(m[0], f"{m[1]:.1f}", f"{m[2]:.1f}", f"{m[3]:.1f}", f"{m[4]:.2f}s")
+        table.add_row(
+            m[0],
+            f"{m[1]:.1f}",
+            f"{m[2]:.1f}",
+            f"{m[3]:.1f}",
+            f"{m[4]:.1f}s",
+            f"{m[5]:.0f}",
+        )
 
     console.print(table)
