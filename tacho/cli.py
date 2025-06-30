@@ -64,9 +64,7 @@ def ping(
     ),
 ):
     """Check which LLM models are accessible without running benchmarks"""
-    res = asyncio.run(run_pings(models))
-    if not sum(res):
-        raise typer.Exit(1)
+    asyncio.run(run_pings(models))
 
 
 def main():
