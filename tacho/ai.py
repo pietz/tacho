@@ -24,13 +24,15 @@ async def ping_model(model: str, console) -> bool:
 async def bench_model(model: str, max_tokens: int) -> tuple[float, int]:
     """Measure inference time for a single run and return time and tokens"""
     start_time = time.time()
-    response = await llm(model, BENCHMARK_PROMPT, max_tokens)
+    res = await llm(model, BENCHMARK_PROMPT, max_tokens)
     duration = time.time() - start_time
-    
 
-    tokens = response.usage.completion_tokens
-    if hasattr(response.usage, 'completion_tokens_details') and response.usage.completion_tokens_details:
-        if hasattr(response.usage.completion_tokens_details, 'reasoning_tokens'):
-            tokens += response.usage.completion_tokens_details.reasoning_tokens
-    
+    tokens = res.usage.completion_tokens
+    if (
+        hasattr(res.usage, "completion_tokens_details")
+        and res.usage.completion_tokens_details
+    ):
+        if hasattr(res.usage.completion_tokens_details, "reasoning_tokens"):
+            tokens += res.usage.completion_tokens_details.reasoning_tokens
+
     return duration, tokens

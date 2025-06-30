@@ -16,10 +16,10 @@ def ensure_env_file():
     """Create .env file with helpful comments if it doesn't exist."""
     env_path = get_env_path()
     env_dir = env_path.parent
-    
+
     # Create directory if needed
     env_dir.mkdir(exist_ok=True)
-    
+
     # Create .env file with comments if it doesn't exist
     if not env_path.exists():
         template = """# Tacho Configuration File
@@ -42,16 +42,19 @@ def ensure_env_file():
 
 """
         env_path.write_text(template)
-        
+
         # Set restrictive permissions on Unix-like systems
-        if os.name != 'nt':  # Not Windows
+        if os.name != "nt":  # Not Windows
             os.chmod(env_path, 0o600)
-        
+
         # Notify user about the created file
         from rich.console import Console
+
         console = Console()
         console.print(f"\n[yellow]Created config file at {env_path}[/yellow]")
-        console.print("Add your API keys to this file to avoid exporting them each time.\n")
+        console.print(
+            "Add your API keys to this file to avoid exporting them each time.\n"
+        )
 
 
 def configure_logging():
@@ -67,6 +70,6 @@ def load_env():
     ensure_env_file()
     env_path = get_env_path()
     load_dotenv(env_path)
-    
+
     # Also configure logging when loading env
     configure_logging()

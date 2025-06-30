@@ -27,13 +27,13 @@ TEST_MODELS = [
     ("gemini/gemini-2.5-flash", ["GEMINI_API_KEY"]),
     # AWS Bedrock
     (
-        "bedrock/anthropic.claude-sonnet-4-20250514-v1:0",
+        "bedrock/us.anthropic.claude-sonnet-4-20250514-v1:0",
         ["AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_REGION_NAME"],
     ),
     # Google Vertex AI
     (
         "vertex_ai/gemini-2.5-flash",
-        ["GOOGLE_APPLICATION_CREDENTIALS", "VERTEXAI_PROJECT"],
+        ["GOOGLE_APPLICATION_CREDENTIALS", "VERTEXAI_PROJECT", "VERTEXAI_LOCATION"],
     ),
     # Local models
     ("ollama_chat/deepseek-r1", []),
