@@ -21,10 +21,14 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
 dependencies = [
-    "litellm[bedrock,vertex_ai]>=1.73.1",
+    "boto3>=1.38.46",
+    "google-auth>=2.40.3",
+    "google>=3.0.0",
+    "litellm>=1.73.1",
     "python-dotenv>=1.1.1",
     "rich>=14.0.0",
     "typer>=0.16.0",
+    "google-cloud-aiplatform>=1.100.0",
 ]
 
 [project.urls]

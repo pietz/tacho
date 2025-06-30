@@ -45,7 +45,7 @@ class TestCLI:
         mock_display = mocker.patch('tacho.cli.display_results')
         
         # Call bench directly
-        bench(["gpt-4", "claude-3"], runs=5, lim=500)
+        bench(["gpt-4", "claude-3"], runs=5, tokens=500)
         
         # Verify display was called with correct arguments
         mock_display.assert_called_once()
@@ -76,7 +76,7 @@ class TestCLI:
         mock_display = mocker.patch('tacho.cli.display_results')
         
         # Call bench directly with options
-        bench(["gpt-4"], runs=10, lim=1000)
+        bench(["gpt-4"], runs=10, tokens=1000)
         
         # Verify display was called
         mock_display.assert_called_once()
@@ -142,7 +142,7 @@ class TestCLI:
         mock_display = mocker.patch('tacho.cli.display_results')
         
         # Call bench with mixed valid/invalid models
-        bench(["gpt-4", "invalid", "claude-3"], runs=3, lim=250)
+        bench(["gpt-4", "invalid", "claude-3"], runs=3, tokens=250)
         
         # Verify only valid models were benchmarked
         mock_display.assert_called_once()

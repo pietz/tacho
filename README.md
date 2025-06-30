@@ -63,13 +63,13 @@ pip install tacho
 tacho gpt-4.1-nano gemini/gemini-2.0-flash
 
 # Custom settings
-tacho gpt-4.1-nano gemini/gemini-2.0-flash --runs 3 --lim 1000
+tacho gpt-4.1-nano gemini/gemini-2.0-flash --runs 3 --tokens 1000
 ```
 
 ### Command options
 
 - `--runs, -r`: Number of inference runs per model (default: 5)
-- `--lim, -l`: Maximum tokens to generate per response (default: 500)
+- `--tokens, -t`: Maximum tokens to generate per response (default: 500)
 - `--prompt, -p`: Custom prompt for benchmarking
 
 ## Output

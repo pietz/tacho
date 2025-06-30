@@ -26,5 +26,11 @@ async def bench_model(model: str, max_tokens: int) -> tuple[float, int]:
     start_time = time.time()
     response = await llm(model, BENCHMARK_PROMPT, max_tokens)
     duration = time.time() - start_time
-    tokens = response.usage.completion_tokens if response.usage else 0
+    
+
+    tokens = response.usage.completion_tokens
+    if hasattr(response.usage, 'completion_tokens_details') and response.usage.completion_tokens_details:
+        if hasattr(response.usage.completion_tokens_details, 'reasoning_tokens'):
+            tokens += response.usage.completion_tokens_details.reasoning_tokens
+    
     return duration, tokens

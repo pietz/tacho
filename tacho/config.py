@@ -24,30 +24,19 @@ def ensure_env_file():
     if not env_path.exists():
         template = """# Tacho Configuration File
 # Add your API keys here to avoid exporting them each time
-#
-# === BASIC PROVIDERS ===
-# OpenAI
 # OPENAI_API_KEY=sk-...
 #
-# Anthropic
 # ANTHROPIC_API_KEY=sk-ant-...
 #
-# Google Gemini
 # GEMINI_API_KEY=...
 #
-# Groq
-# GROQ_API_KEY=gsk_...
-#
-# === CLOUD PROVIDERS ===
-# AWS Bedrock (requires all three)
 # AWS_ACCESS_KEY_ID=...
 # AWS_SECRET_ACCESS_KEY=...
 # AWS_REGION_NAME=us-east-1
 #
-# Google Vertex AI (requires both)
 # GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json
 # VERTEXAI_PROJECT=your-gcp-project-id
-# VERTEXAI_LOCATION=us-central1  # optional, defaults to us-central1
+# VERTEXAI_LOCATION=us-east5  # optional, defaults to us-east5
 #
 # For more providers, see: https://docs.litellm.ai/docs/providers
 

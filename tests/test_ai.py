@@ -78,9 +78,13 @@ class TestAI:
         mock_time = mocker.patch('tacho.ai.time.time')
         mock_time.side_effect = [100.0, 102.5]  # 2.5 second duration
         
-        # Configure mock response with usage data
+        # Configure mock response with usage data (no reasoning tokens)
         mock_response = MagicMock()
-        mock_response.usage.completion_tokens = 150
+        mock_usage = MagicMock()
+        mock_usage.completion_tokens = 150
+        # Explicitly configure to not have completion_tokens_details
+        mock_usage.completion_tokens_details = None
+        mock_response.usage = mock_usage
         mock_litellm.return_value = mock_response
         
         duration, tokens = await bench_model("gpt-4", 500)
@@ -121,3 +125,54 @@ class TestAI:
         
         with pytest.raises(Exception, match="Network error"):
             await bench_model("gpt-4", 500)
+    
+    @pytest.mark.asyncio
+    async def test_bench_model_with_reasoning_tokens(self, mock_litellm, mocker):
+        """Test benchmark with reasoning models that have completion_tokens_details"""
+        # Mock time
+        mock_time = mocker.patch('tacho.ai.time.time')
+        mock_time.side_effect = [100.0, 103.0]  # 3 second duration
+        
+        # Configure mock response with reasoning tokens
+        mock_response = MagicMock()
+        mock_response.usage.completion_tokens = 50  # Regular completion tokens
+        
+        # Mock completion_tokens_details with reasoning_tokens
+        mock_details = MagicMock()
+        mock_details.reasoning_tokens = 200  # Reasoning tokens
+        mock_response.usage.completion_tokens_details = mock_details
+        
+        mock_litellm.return_value = mock_response
+        
+        duration, tokens = await bench_model("o1-mini", 500)
+        
+        # Verify results - should include both completion and reasoning tokens
+        assert duration == 3.0
+        assert tokens == 250  # 50 completion + 200 reasoning
+        
+        # Verify LLM was called correctly
+        mock_litellm.assert_called_once_with(
+            "o1-mini",
+            [{"role": "user", "content": BENCHMARK_PROMPT}],
+            max_tokens=500
+        )
+    
+    @pytest.mark.asyncio
+    async def test_bench_model_with_empty_completion_details(self, mock_litellm, mocker):
+        """Test benchmark when completion_tokens_details exists but has no reasoning_tokens"""
+        # Mock time
+        mock_time = mocker.patch('tacho.ai.time.time')
+        mock_time.side_effect = [100.0, 102.0]
+        
+        # Configure mock response with completion_tokens_details but no reasoning_tokens
+        mock_response = MagicMock()
+        mock_response.usage.completion_tokens = 100
+        mock_response.usage.completion_tokens_details = MagicMock(spec=[])  # No reasoning_tokens attribute
+        
+        mock_litellm.return_value = mock_response
+        
+        duration, tokens = await bench_model("gpt-4", 500)
+        
+        # Should only count regular completion tokens
+        assert duration == 2.0
+        assert tokens == 100
