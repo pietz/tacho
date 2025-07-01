@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.1] - 2025-01-31
+
+### Added
+- Parameter validation: `--runs` and `--tokens` now require positive values (minimum of 1)
+
+### Fixed
+- Fixed issue where zero or negative values for `--runs` and `--tokens` were accepted but caused unclear behavior
+
+## [0.8.0] - 2025-01-31
+
+### Changed
+- **BREAKING**: Simplified CLI to single-purpose tool - removed `bench` and `ping` subcommands
+- The tool now benchmarks models directly: `tacho model1 model2`
+- Fixed help system - `--help` now works correctly in all contexts
+- Options can now be placed anywhere in the command: `tacho model -r 3` or `tacho -r 3 model`
+
+### Removed
+- Removed `ping` subcommand (validation still happens automatically before benchmarking)
+- Removed subcommand structure entirely for cleaner, more intuitive usage
+
 ## [0.7.1] - 2025-01-30
 
 ### Added
