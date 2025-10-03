@@ -56,7 +56,7 @@ async def ping_model(model: str, console) -> bool:
             )
         return False
     except Exception as e:
-        console.print(f"[red]✗[/red] {model} - {str(e)[:100]}")
+        console.print(f"[red]✗[/red] {model} - {str(e)[:200]}")
         return False
 
 
