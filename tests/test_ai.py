@@ -54,7 +54,7 @@ class TestAI:
 
         # Verify LLM was called with validation prompt
         mock_litellm.assert_called_once_with(
-            "gpt-4", [{"role": "user", "content": VALIDATION_PROMPT}], max_tokens=10
+            "gpt-4", [{"role": "user", "content": VALIDATION_PROMPT}], max_tokens=20
         )
 
     @pytest.mark.asyncio

@@ -19,7 +19,7 @@ async def llm(model: str, prompt: str, tokens: int | None = None):
 
 async def ping_model(model: str, console) -> bool:
     try:
-        await llm(model, VALIDATION_PROMPT, 10)
+        await llm(model, VALIDATION_PROMPT, 20)
         console.print(f"[green]✓[/green] {model}")
         return True
     except AuthenticationError as e:

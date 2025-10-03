@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.5] - 2025-02-03
+
+### Fixed
+- Fixed tests to match refactored CLI structure (updated from removed `bench`/`ping` functions to unified `cli` function)
+- Fixed `test_invalid_model_handling` to mock API calls and prevent failures in CI environments
+- Increased validation ping tokens from 10 to 20 to support newer OpenAI models with minimum token requirements
+- Increased generic error message truncation from 100 to 200 characters for better debugging
+
 ## [0.8.1] - 2025-01-31
 
 ### Added
