@@ -4,7 +4,7 @@ import pytest
 import typer
 from typer.testing import CliRunner
 
-from tacho.cli import app, bench, ping, version_callback
+from tacho.cli import app, cli, version_callback
 
 
 @pytest.mark.unit
