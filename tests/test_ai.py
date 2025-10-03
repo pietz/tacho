@@ -54,7 +54,7 @@ class TestAI:
 
         # Verify LLM was called with validation prompt
         mock_litellm.assert_called_once_with(
-            "gpt-4", [{"role": "user", "content": VALIDATION_PROMPT}], max_tokens=1
+            "gpt-4", [{"role": "user", "content": VALIDATION_PROMPT}], max_tokens=10
         )
 
     @pytest.mark.asyncio
@@ -69,9 +69,9 @@ class TestAI:
         # Verify failure
         assert result is False
 
-        # Verify error output - now includes "..." for generic exceptions
+        # Verify error output - truncated to 100 chars for generic exceptions
         mock_console_instance.print.assert_called_once_with(
-            "[red]✗[/red] invalid-model - API Error..."
+            "[red]✗[/red] invalid-model - API Error"
         )
 
     @pytest.mark.asyncio

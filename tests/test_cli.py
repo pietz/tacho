@@ -32,7 +32,7 @@ class TestCLI:
 
     def test_bench_command_success(self, runner, mocker):
         """Test successful benchmark command"""
-        # Test the bench function directly to avoid callback issues
+        # Test the cli function directly to avoid callback issues
         mock_asyncio_run = mocker.patch("tacho.cli.asyncio.run")
 
         # First call to run_pings
@@ -54,8 +54,8 @@ class TestCLI:
 
         mock_display = mocker.patch("tacho.cli.display_results")
 
-        # Call bench directly
-        bench(["gpt-4", "claude-3"], runs=5, tokens=500)
+        # Call cli directly
+        cli(["gpt-4", "claude-3"], runs=5, tokens=500)
 
         # Verify display was called with correct arguments
         mock_display.assert_called_once()
@@ -68,7 +68,7 @@ class TestCLI:
         mock_run_pings = mocker.patch("tacho.cli.run_pings", new_callable=AsyncMock)
         mock_run_pings.return_value = [False, False]  # No valid models
 
-        result = runner.invoke(app, ["bench", "invalid1", "invalid2"])
+        result = runner.invoke(app, ["invalid1", "invalid2"])
 
         assert result.exit_code == 1
         mock_run_pings.assert_called_once()
@@ -85,8 +85,8 @@ class TestCLI:
 
         mock_display = mocker.patch("tacho.cli.display_results")
 
-        # Call bench directly with options
-        bench(["gpt-4"], runs=10, tokens=1000)
+        # Call cli directly with options
+        cli(["gpt-4"], runs=10, tokens=1000)
 
         # Verify display was called
         mock_display.assert_called_once()
@@ -94,23 +94,28 @@ class TestCLI:
         assert call_args[0] == ["gpt-4"]
         assert call_args[1] == 10
 
-    def test_ping_command_success(self, runner, mocker):
-        """Test successful ping command"""
+    def test_cli_with_partial_valid_models(self, runner, mocker):
+        """Test CLI when some models fail validation"""
         mock_asyncio_run = mocker.patch("tacho.cli.asyncio.run")
-        mock_asyncio_run.return_value = [True, False, True]
+        mock_asyncio_run.side_effect = [
+            [True, False, True],  # run_pings: gpt-4 valid, invalid fails, claude-3 valid
+            [(2.0, 100), (1.8, 95)],  # run_benchmarks for valid models
+        ]
+        mock_display = mocker.patch("tacho.cli.display_results")
 
-        # Call ping directly
-        ping(["gpt-4", "invalid", "claude-3"])
+        # Call cli with mixed valid/invalid models
+        cli(["gpt-4", "invalid", "claude-3"], runs=1, tokens=250)
 
         # Should not raise Exit since at least one model succeeded
-        mock_asyncio_run.assert_called_once()
+        assert mock_asyncio_run.call_count == 2
+        mock_display.assert_called_once()
 
-    def test_ping_command_all_fail(self, runner, mocker):
-        """Test ping command when all models fail"""
+    def test_cli_all_models_fail(self, runner, mocker):
+        """Test CLI when all models fail validation"""
         mock_run_pings = mocker.patch("tacho.cli.run_pings", new_callable=AsyncMock)
         mock_run_pings.return_value = [False, False]
 
-        result = runner.invoke(app, ["ping", "invalid1", "invalid2"])
+        result = runner.invoke(app, ["invalid1", "invalid2"])
 
         assert result.exit_code == 1
 
@@ -140,8 +145,8 @@ class TestCLI:
         assert result.exit_code == 0
         assert "CLI tool for measuring LLM inference speeds" in result.output
 
-    def test_bench_function_partial_valid_models(self, mocker):
-        """Test bench function filters out invalid models"""
+    def test_cli_function_partial_valid_models(self, mocker):
+        """Test cli function filters out invalid models"""
         mock_asyncio_run = mocker.patch("tacho.cli.asyncio.run")
 
         # Configure responses: first ping returns mixed results
@@ -163,8 +168,8 @@ class TestCLI:
 
         mock_display = mocker.patch("tacho.cli.display_results")
 
-        # Call bench with mixed valid/invalid models
-        bench(["gpt-4", "invalid", "claude-3"], runs=3, tokens=250)
+        # Call cli with mixed valid/invalid models
+        cli(["gpt-4", "invalid", "claude-3"], runs=3, tokens=250)
 
         # Verify only valid models were benchmarked
         mock_display.assert_called_once()
