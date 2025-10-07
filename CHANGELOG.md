@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.6] - 2025-02-08
+
+### Fixed
+- Added automatic retry logic (up to 3 attempts) for transient API errors during model validation and benchmarking
+- Fixed `openai/gpt-5-codex` and similar models that occasionally fail with `InternalServerError` or `APIConnectionError` on first request
+- Improved error handling to distinguish between retryable errors (connection issues, internal server errors) and permanent failures (authentication, not found, rate limits)
+
 ## [0.8.5] - 2025-02-03
 
 ### Fixed
