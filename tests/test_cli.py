@@ -32,24 +32,23 @@ class TestCLI:
 
     def test_bench_command_success(self, runner, mocker):
         """Test successful benchmark command"""
-        # Test the cli function directly to avoid callback issues
-        mock_asyncio_run = mocker.patch("tacho.cli.asyncio.run")
+        mock_run_pings = mocker.patch("tacho.cli.run_pings", new_callable=AsyncMock)
+        mock_run_pings.return_value = [True, True]
 
-        # First call to run_pings
-        mock_asyncio_run.side_effect = [
-            [True, True],  # run_pings result
-            [
-                (2.0, 100),
-                (2.1, 102),
-                (2.2, 104),
-                (2.3, 106),
-                (2.4, 108),  # run_benchmarks results
-                (1.5, 95),
-                (1.6, 97),
-                (1.7, 99),
-                (1.8, 101),
-                (1.9, 103),
-            ],
+        mock_run_benchmarks = mocker.patch(
+            "tacho.cli.run_benchmarks", new_callable=AsyncMock
+        )
+        mock_run_benchmarks.return_value = [
+            (2.0, 100),
+            (2.1, 102),
+            (2.2, 104),
+            (2.3, 106),
+            (2.4, 108),
+            (1.5, 95),
+            (1.6, 97),
+            (1.7, 99),
+            (1.8, 101),
+            (1.9, 103),
         ]
 
         mock_display = mocker.patch("tacho.cli.display_results")
@@ -75,13 +74,13 @@ class TestCLI:
 
     def test_bench_command_with_options(self, runner, mocker):
         """Test benchmark command with custom options"""
-        mock_asyncio_run = mocker.patch("tacho.cli.asyncio.run")
+        mock_run_pings = mocker.patch("tacho.cli.run_pings", new_callable=AsyncMock)
+        mock_run_pings.return_value = [True]
 
-        # Configure asyncio.run mock responses
-        mock_asyncio_run.side_effect = [
-            [True],  # run_pings result
-            [(2.0 + i * 0.1, 100 + i) for i in range(10)],  # run_benchmarks results
-        ]
+        mock_run_benchmarks = mocker.patch(
+            "tacho.cli.run_benchmarks", new_callable=AsyncMock
+        )
+        mock_run_benchmarks.return_value = [(2.0 + i * 0.1, 100 + i) for i in range(10)]
 
         mock_display = mocker.patch("tacho.cli.display_results")
 
@@ -96,18 +95,22 @@ class TestCLI:
 
     def test_cli_with_partial_valid_models(self, runner, mocker):
         """Test CLI when some models fail validation"""
-        mock_asyncio_run = mocker.patch("tacho.cli.asyncio.run")
-        mock_asyncio_run.side_effect = [
-            [True, False, True],  # run_pings: gpt-4 valid, invalid fails, claude-3 valid
-            [(2.0, 100), (1.8, 95)],  # run_benchmarks for valid models
-        ]
+        mock_run_pings = mocker.patch("tacho.cli.run_pings", new_callable=AsyncMock)
+        mock_run_pings.return_value = [True, False, True]
+
+        mock_run_benchmarks = mocker.patch(
+            "tacho.cli.run_benchmarks", new_callable=AsyncMock
+        )
+        mock_run_benchmarks.return_value = [(2.0, 100), (1.8, 95)]
+
         mock_display = mocker.patch("tacho.cli.display_results")
 
         # Call cli with mixed valid/invalid models
         cli(["gpt-4", "invalid", "claude-3"], runs=1, tokens=250)
 
         # Should not raise Exit since at least one model succeeded
-        assert mock_asyncio_run.call_count == 2
+        mock_run_pings.assert_called_once()
+        mock_run_benchmarks.assert_called_once()
         mock_display.assert_called_once()
 
     def test_cli_all_models_fail(self, runner, mocker):
@@ -147,23 +150,19 @@ class TestCLI:
 
     def test_cli_function_partial_valid_models(self, mocker):
         """Test cli function filters out invalid models"""
-        mock_asyncio_run = mocker.patch("tacho.cli.asyncio.run")
+        mock_run_pings = mocker.patch("tacho.cli.run_pings", new_callable=AsyncMock)
+        mock_run_pings.return_value = [True, False, True]
 
-        # Configure responses: first ping returns mixed results
-        mock_asyncio_run.side_effect = [
-            [
-                True,
-                False,
-                True,
-            ],  # run_pings: gpt-4 valid, invalid fails, claude-3 valid
-            [
-                (2.0, 100),
-                (2.1, 102),
-                (2.2, 104),  # Results for gpt-4 (3 runs)
-                (1.8, 95),
-                (1.9, 97),
-                (2.0, 99),
-            ],  # Results for claude-3 (3 runs)
+        mock_run_benchmarks = mocker.patch(
+            "tacho.cli.run_benchmarks", new_callable=AsyncMock
+        )
+        mock_run_benchmarks.return_value = [
+            (2.0, 100),
+            (2.1, 102),
+            (2.2, 104),
+            (1.8, 95),
+            (1.9, 97),
+            (2.0, 99),
         ]
 
         mock_display = mocker.patch("tacho.cli.display_results")

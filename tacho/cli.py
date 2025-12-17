@@ -21,6 +21,16 @@ def version_callback(value: bool):
         raise typer.Exit()
 
 
+async def run_cli(models: list[str], runs: int, tokens: int):
+    """Run pings and benchmarks in a single event loop"""
+    res = await run_pings(models)
+    valid_models = [models[i] for i in range(len(models)) if res[i]]
+    if not valid_models:
+        return None, None
+    bench_res = await run_benchmarks(valid_models, runs, tokens)
+    return valid_models, bench_res
+
+
 @app.command()
 def cli(
     models: list[str] = typer.Argument(
@@ -36,11 +46,9 @@ def cli(
     ),
 ):
     """CLI tool for measuring LLM inference speeds"""
-    res = asyncio.run(run_pings(models))
-    valid_models = [models[i] for i in range(len(models)) if res[i]]
-    if not valid_models:
+    valid_models, res = asyncio.run(run_cli(models, runs, tokens))
+    if valid_models is None:
         raise typer.Exit(1)
-    res = asyncio.run(run_benchmarks(valid_models, runs, tokens))
     display_results(valid_models, runs, res)
 
 
